@@ -11,7 +11,7 @@ class Board:
         self.width = width
         self.turn_counter = 0
     
-    def move_blob(self, blob_location, blob_number, target):
+    def process_movement(self, blob_location_list = [], blob_number_list= [], target_list = []):
         # process blob movement
         pass
     
@@ -21,24 +21,25 @@ class Board:
 
     def delete_player(self, player):
         # Search for all player-owner blobs and delete them. Remove player from list at the end
-        pass
+        for x in self.board_state:
+            for y in self.board_state[x]:
+                if self.board_state[x][y].get_owner(player):
+                    self.board_state.set_owner(None)
+                    self.board_state.set_number(0)
+        self.player_list.pop(player)
 
-    def process_collision(self, blob1=0, blob2=0, blob3=0, blob4=0):
+    def process_collision(self, blob_list = list()):
         # process blob collision
-        if (blob1 > blob2 and blob1 > blob3 and blob1 > blob4):
-            return blob1 - math.max(blob2, blob3, blob4)
-        elif (blob2 > blob1 and blob2 > blob3 and blob2 > blob4):
-            return blob2 - math.max(blob1, blob3, blob4)
-        elif (blob3 > blob1 and blob3 > blob2 and blob3 > blob4):
-            return blob3 - math.max(blob1, blob2, blob4)
-        elif (blob4 > blob1 and blob4 > blob2 and blob4 > blob3):
-            return blob4 - math.max(blob1, blob2, blob3)
-        else:
-            return 0
+        first_max = max(blob_list)
+        second_max = max(blob_list.pop(first_max))
+        return first_max - second_max
 
-    def merge_blob(self, blob1=0, blob2=0, blob3=0, blob4=0):
+    def merge_blob(self, blob_list = list()):
         # process blob merge
-        return blob1 + blob2
+        merged_blob = 0
+        for blob in blob_list:
+            merged_blob += blob
+        return merged_blob
     
     def complete_encirclement(self, length, width, reference_point):
         # definitely the hardest thing to program
@@ -57,6 +58,10 @@ class Board:
     
     def blob_income(self):
         # Give each base an extra blob
+        pass
+
+    def generate_decision(self):
+        # force all players to generate input for the board
         pass
 
     def print_output(self):
