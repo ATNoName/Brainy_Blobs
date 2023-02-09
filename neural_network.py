@@ -18,6 +18,9 @@ class Player:
         self.baseX = x
         self.baseY = y
         self.blob_location = list((x,y)) # location of all blobs
+
+    def get_base(self):
+        return (self.baseX, self.baseY)
     
     def move_blob(self, direction = Direction(), number=0, x=0, y=0):
         # return Input for board
@@ -49,17 +52,19 @@ class Player:
 class NeuralNetwork:
     """
     Idea for Neutral Network:
-    We have giant neural network which calulates which areas is most significant.
+    We have giant neural network which calulates which areas is most significant to move.
     This represents the player's decision making.
 
     Then, we have a small neural network for all of the small which decide which direction to move and
     how many blobs to split and move.
+
+    Both neural network weights are subject to genetic algorithm.
     """
 
     def __init__(self):
         pass
 
-    def calculate_neuron(self):
+    def calculate_area(self):
         pass
 
     def calculate_input(self, location = (0,0)):

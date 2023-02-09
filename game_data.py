@@ -17,7 +17,10 @@ class Board:
     
     def conquer_space(self, owner, x, y):
         # Note: base elimination is included in this
-        pass
+        if (self.board_state[x][y].get_type() == 1):
+            self.delete_player(self.board_state[x][y].get_owner())
+            self.board_state[x][y].set_type(0)
+        self.board_state.set_owner(owner)
 
     def delete_player(self, player):
         # Search for all player-owner blobs and delete them. Remove player from list at the end
@@ -56,12 +59,15 @@ class Board:
             self.board_state[x][y].set_owner(player)
             self.player_list.append(player, x, y)
     
-    def blob_income(self):
+    def blob_income(self, income):
         # Give each base an extra blob
-        pass
+        for player in self.player_list:
+            x,y = player.get_base()
+            self.board_state[x][y].set_number(self.board_state[x][y].get_number() + income)
 
     def generate_decision(self):
-        # force all players to generate input for the board
+        # force all players to generate input for the board.
+        # Output should be three list which process_movement can be executed
         pass
 
     def print_output(self):
@@ -71,7 +77,7 @@ class Board:
 class Space:
     def __init__(self):
         self.owner = None # Basically specify if base or blob army or none
-        self.type = None
+        self.type = 0
         self.number = 0
     
     def get_owner(self):
