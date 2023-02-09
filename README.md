@@ -1,2 +1,2 @@
 # DCP_games
-solve a game using machine learning and distributive programming.
+Using Evolutionary Neutral Network and Distributive Programming in order to simulate a prototypical strategy game.
