@@ -1,4 +1,6 @@
 import random
+import neural_network
+import math
 
 class Board:
     # Note: the action should be simulatenous
@@ -9,7 +11,7 @@ class Board:
         self.width = width
         self.turn_counter = 0
     
-    def move_blob(self, blob, target):
+    def move_blob(self, blob_location, blob_number, target):
         # process blob movement
         pass
     
@@ -21,16 +23,20 @@ class Board:
         # Search for all player-owner blobs and delete them. Remove player from list at the end
         pass
 
-    def process_collision(self, blob1, blob2):
+    def process_collision(self, blob1=0, blob2=0, blob3=0, blob4=0):
         # process blob collision
-        if (blob1 > blob2):
-            return blob1 - blob2
-        elif (blob1 < blob2):
-            return blob2 - blob1
+        if (blob1 > blob2 and blob1 > blob3 and blob1 > blob4):
+            return blob1 - math.max(blob2, blob3, blob4)
+        elif (blob2 > blob1 and blob2 > blob3 and blob2 > blob4):
+            return blob2 - math.max(blob1, blob3, blob4)
+        elif (blob3 > blob1 and blob3 > blob2 and blob3 > blob4):
+            return blob3 - math.max(blob1, blob2, blob4)
+        elif (blob4 > blob1 and blob4 > blob2 and blob4 > blob3):
+            return blob4 - math.max(blob1, blob2, blob3)
         else:
             return 0
 
-    def merge_blob(self, blob1, blob2):
+    def merge_blob(self, blob1=0, blob2=0, blob3=0, blob4=0):
         # process blob merge
         return blob1 + blob2
     
@@ -41,13 +47,13 @@ class Board:
     def generate_base(self, value):
         # create new bases (very primitive, replace if code is better)
         for self in range(value):
-            player = Player()
             x = random.randint(0, self.length - 1)
             y = random.randint(0, self.width - 1)
+            player = neural_network.Player(len(self.player_list), (random.randint(0, 255), random.randint(0, 255), random.randint(0, 255)), x, y)
             self.board_state[x][y].set_type(1)
             self.board_state[x][y].set_number(10)
             self.board_state[x][y].set_owner(player)
-            self.player_list.append(player)
+            self.player_list.append(player, x, y)
     
     def blob_income(self):
         # Give each base an extra blob
@@ -80,7 +86,3 @@ class Space:
 
     def set_number(self, number):
         self.number = number
-
-class Player:
-    def __init__(self):
-        self.colour = random.randint(0, 255), random.randint(0, 255), random.randint(0, 255)
