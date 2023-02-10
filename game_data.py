@@ -66,8 +66,11 @@ class Board:
             if not action_processed[i]:
                 target_space = self.board_state[target_list[i][0]][target_list[i][1]]
                 owner = self.board_state[blob_location_list[i][0]][blob_location_list[i][1]].get_owner()
+                target_space.add_number(blob_number_list[i])
                 if (target_space.get_owner() != owner):
                     self.conquer_space(owner, target_list[i][0], target_list[i][1])
+                    target_space.add_number(-1)
+
         # Process encirclement
         self.process_encirclement()
     
@@ -107,13 +110,6 @@ class Board:
             return False, blob2 - blob1
         else:
             return False, 0
-
-    def merge_blob(self, blob_list=list()):
-        # process blob merge
-        merged_blob = 0
-        for blob in blob_list:
-            merged_blob += blob
-        return merged_blob
     
     def process_encirclement(self):
         # This function is processed when a group of blob is "surrounded" by other blobs.
