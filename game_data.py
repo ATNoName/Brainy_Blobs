@@ -1,6 +1,7 @@
 import random
-import neural_network
-import math
+import neural_network as nn
+import player
+import copy
 
 class Board:
     # Note: the action should be simulatenous
@@ -13,7 +14,35 @@ class Board:
     
     def process_movement(self, blob_location_list = [], blob_number_list= [], target_list = []):
         # process blob movement
-        pass
+        action_processed = [False]*len(target_list)
+        for i in range(len(target_list)):
+            if not action_processed[i]:
+                # start the movement process
+                action_processed[i] = True
+                target_space = self.board_state[target_list[i][0]][target_list[i][1]]
+                start_space = self.board_state[blob_location_list[i][0]][blob_location_list[i][1]]
+                owner = start_space.get_owner()
+                start_space.add_number(-blob_number_list[i])
+                # check if movementcollision needs to be processed
+                if target_list[i] in blob_location_list:
+                    target_index = blob_location_list.index(target_list[i])
+                    if target_list[target_index] == blob_location_list[i]:
+                        result = self.process_movementcollision(blob_number_list[i], blob_number_list[target_index])
+                        if not result[0]:
+                            blob_number_list[i] = 0
+                            blob_number_list[target_index] = result[1]
+                            break
+                        else:
+                            blob_number_list[i] = result[1]
+                # check if areacollision needs to be processed
+                blob_list = [blob_number_list[i]]
+                for j in range(i, len(target_list)):
+                    if target_list[i] == target_list[j]:
+                        blob_list.append(target_list[j])
+                # move the damn thing
+
+                # process area conquest
+
     
     def conquer_space(self, owner, x, y):
         # Note: base elimination is included in this
@@ -31,11 +60,21 @@ class Board:
                     self.board_state.set_number(0)
         self.player_list.pop(player)
 
-    def process_collision(self, blob_list = list()):
+    def process_areacollision(self, blob_list = list()):
         # process blob collision
         first_max = max(blob_list)
         second_max = max(blob_list.pop(first_max))
-        return first_max - second_max
+        return blob_list.index(first_max), first_max - second_max
+
+    def process_movementcollision(self, blob1, blob2):
+        # this function is used for when two opposing blob
+        # "hit" each other. Return True if atkowner won
+        if (blob1 > blob2):
+            return True, blob1-blob2
+        elif (blob2 > blob1):
+            return False, blob2-blob1
+        else:
+            return False, 0
 
     def merge_blob(self, blob_list = list()):
         # process blob merge
@@ -44,16 +83,23 @@ class Board:
             merged_blob += blob
         return merged_blob
     
-    def complete_encirclement(self, length, width, reference_point):
-        # definitely the hardest thing to program
-        pass
+    def process_encirclement(self, point = (0,0), atkowner = nn.Player()):
+        # This function is processed when at least 4 blobs surrounds
+        # one blob
+        x,y = point
+        self.board_state[x][y].set_number(0)
+        self.board_state[x][y].set_owner(atkowner)
+        self.board_state[x-1][y].add_number(-1)
+        self.board_state[x][y-1].add_number(-1)
+        self.board_state[x+1][y].add_number(-1)
+        self.board_state[x][y+1].add_number(-1)
 
     def generate_base(self, value):
         # create new bases (very primitive, replace if code is better)
         for self in range(value):
             x = random.randint(0, self.length - 1)
             y = random.randint(0, self.width - 1)
-            player = neural_network.Player(len(self.player_list), (random.randint(0, 255), random.randint(0, 255), random.randint(0, 255)), x, y)
+            player = player.Player(len(self.player_list), (random.randint(0, 255), random.randint(0, 255), random.randint(0, 255)), x, y)
             self.board_state[x][y].set_type(1)
             self.board_state[x][y].set_number(10)
             self.board_state[x][y].set_owner(player)
@@ -63,7 +109,7 @@ class Board:
         # Give each base an extra blob
         for player in self.player_list:
             x,y = player.get_base()
-            self.board_state[x][y].set_number(self.board_state[x][y].get_number() + income)
+            self.board_state[x][y].add_number(income)
 
     def generate_decision(self):
         # force all players to generate input for the board.
@@ -72,7 +118,7 @@ class Board:
 
     def print_output(self):
         # Convert board state into data which can be processed and displayed.
-        pass
+        return copy.deepcopy(self.board_state)
 
 class Space:
     def __init__(self):
@@ -97,3 +143,6 @@ class Space:
 
     def set_number(self, number):
         self.number = number
+
+    def add_number(self, number):
+        self.number += number
