@@ -1,3 +1,6 @@
+import numpy as np
+import random
+
 class NeuralNetwork:
     """
     Idea for Neutral Network:
@@ -11,10 +14,33 @@ class NeuralNetwork:
     """
 
     def __init__(self, input_length, hidden_length, layer_count, output_length):
-        pass
+        self.input = np.zeros(input_length)
+        self.hidden = []
+        self.size = 0
+        for layer in range(layer_count - 1):
+            if layer == 0:
+                self.hidden.append(np.zeros((hidden_length, input_length)))
+                self.size += hidden_length*input_length
+            elif layer == layer_count - 2:
+                self.hidden.append(np.zeros((output_length, hidden_length)))
+                self.size += hidden_length*output_length
+            else:
+                self.hidden.append(np.zeros((hidden_length, hidden_length)))
+                self.size += hidden_length*hidden_length
+        self.output = np.zeros(output_length)
 
-    def set_weight(self, layer, weight_array):
-        pass
+    def randomize_weight(self):
+        for layer in self.hidden:
+            for x in self.hidden[layer]:
+                for y in self.hidden[layer][x]:
+                    self.set_weight(layer, x, y, random.random())
+
+
+    def set_weight(self, layer, x, y, value):
+        self.layer[layer][x][y] = value
+
+    def set_input(self, input = np.array()):
+        self.input = input
 
     def evaluate_ann(self):
         output_set = np.array()

@@ -13,12 +13,17 @@ class Direction(enum):
     West = 4
 
 class Player:
-    def __init__(self, id, colour=(0,0,0), x=-1, y=-1):
+    def __init__(self, id, colour=(0,0,0), x=-1, y=-1, net = None):
         self.id = id
         self.colour = colour
         self.baseX = x
         self.baseY = y
         self.blob_location = list((x,y)) # location of all blobs
+        if net is None:
+            self.net = nn.NeuralNetwork(Board.length*Board.width, Board.length*Board.width, 3, Board.length*Board.width)
+            self.net.randomize_weight()
+        else:
+            self.net = net
 
     def get_base(self):
         return (self.baseX, self.baseY)
@@ -45,6 +50,10 @@ class Player:
                     self.blob_location.append((x,y))
         return
     
+    def generate_input_set(self, board = Board()):
+        # generate input set for ANN
+        pass
+
     def make_decision(self):
-        # use Neutral Network to generate input for board
+        # generate output by calling ANN evaluate
         pass
