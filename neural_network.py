@@ -37,11 +37,13 @@ class NeuralNetwork:
 
 
     def set_weight(self, layer, x, y, value):
-        self.layer[layer][x][y] = value
+        self.hidden[layer][x][y] = value
 
     def set_input(self, input = np.array()):
         self.input = input
 
     def evaluate_ann(self):
-        output_set = np.array()
-        return output_set
+        self.output = self.input
+        for i in range(0,len(self.hidden)):
+            self.output = np.matmul(self.hidden[i], self.output)
+        return self.output
