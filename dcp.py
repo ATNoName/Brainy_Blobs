@@ -6,11 +6,12 @@ import game_data as gd
 
 def dcp_activate(board = gd.Board()):
     player_list = board.player_list
-    job = dcp.compute_for(player_list, dcp_ann)
+    job = dcp.compute_for((player_list, board), dcp_ann)
     job.requires('numpy')
     job.compute_groups = [{'joinKey': 'test', 'joinSecret': 'dcp'}]
     job.public['name'] = "ANN evalutation via DCP!"
-    return job.exec()
+    result = job.exec()
+    return result
 
 
 def dcp_ann(player, board = gd.Board()):

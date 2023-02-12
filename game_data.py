@@ -1,8 +1,8 @@
 import random
 import neural_network as nn
-import player
+import player as p
 import copy
-
+import dcp
 
 class Board:
     # Note: the action should be simultaneous
@@ -160,11 +160,11 @@ class Board:
                     baseX, baseY = player.get_base()
                     if abs(baseX - x) + abs(baseY - y) < dist:
                         is_suitable = False
-            player = player.Player(len(self.player_list), (random.randint(0, 255), random.randint(0, 255), random.randint(0, 255)), x, y)
+            new_player = p.Player(len(self.player_list), (random.randint(0, 255), random.randint(0, 255), random.randint(0, 255)), x, y)
             self.board_state[x][y].set_type(1)
             self.board_state[x][y].set_number(10)
-            self.board_state[x][y].set_owner(player)
-            self.player_list.append(player, x, y)
+            self.board_state[x][y].set_owner(new_player)
+            self.player_list.append(new_player, x, y)
 
     def blob_income(self, income):
         # Give each base an extra blob
@@ -175,7 +175,7 @@ class Board:
     def generate_decision(self):
         # force all players to generate input for the board.
         # Output should be three list which process_movement can be executed
-        pass
+        dcp.dcp_activate(self)
 
     def print_output(self):
         # Convert board state into data which can be processed and displayed.
