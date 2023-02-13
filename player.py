@@ -26,10 +26,20 @@ class Player:
             self.net = net
 
     def get_base(self):
+        """
+        Get the location of the player's base
+        """
         return (self.baseX, self.baseY)
     
     def move_blob(self, direction = Direction(), number=0, x=0, y=0):
-        # return Input for board
+        """
+        The player input for a blob army in that area. Used for process_movement
+        Argument: direction: which direction to go
+                  number: how many blobs to sent to
+                  x: the x coordinate of a particular blob
+                  y: the y coordinate of a particular blob
+                  return: the input set for process movement
+        """
         target = tuple()
         if direction == Direction.North:
             target = (x, y-1)
@@ -42,7 +52,10 @@ class Player:
         return ((x,y), number, target)
 
     def blob_search(self, board = game_data.Board()):
-        # Get all blob location
+        """
+        Get all blob location owned by the player
+        Argument: board: the arena
+        """
         self.blob_location = list()
         for x in board.width:
             for y in board.length:
@@ -74,5 +87,8 @@ class Player:
         self.net.input = input_set
 
     def make_decision(self):
-        # generate output by calling ANN evaluate
+        """
+        Generate output by calling ANN evaluate
+        Return: the output set for the ANN
+        """
         return self.net.evaluate_ann()

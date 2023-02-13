@@ -14,7 +14,13 @@ class Board:
         self.turn_counter = 0
 
     def process_movement(self, blob_location_list=[], blob_number_list=[], target_list=[]):
-        # process blob movement
+        """
+        Process all inputs from players from make_decisions. The index of
+        the argument make up the input for the player
+        Arguments: blob_location_list[]: the initial location of the blobs
+        blob_number_list[]: the number of blob that are going to move
+        target_list[]: the target location of the blob.
+        """
         action_processed = [False]*len(target_list)
         # Remove all blobs that are moving from space
         for i in range(len(target_list)):
@@ -75,14 +81,25 @@ class Board:
         self.process_encirclement()
     
     def conquer_space(self, owner, x, y):
-        # Note: base elimination is included in this
+        """
+        Process space conquest which just set the space owner to the conquering player
+        If the space has an opposing base, that base is deleted and player elimination is processed
+        Argument: owner: the owner of the attacking blob
+        x: the x coordinate of the space
+        y: the y coordinate of the space
+        """
         if self.board_state[x][y].get_type() == 1:
             self.delete_player(self.board_state[x][y].get_owner())
             self.board_state[x][y].set_type(0)
         self.board_state.set_owner(owner)
 
     def delete_player(self, player):
-        # Search for all player-owner blobs and delete them. Remove player from list at the end
+        """
+        Search for all player-owner blobs and delete them.
+        Also search for player-owned space and revert them to neutral territory
+        Remove player from list at the end
+        Argument: player: the player marked for deletion
+        """
         for x in self.board_state:
             for y in self.board_state[x]:
                 if self.board_state[x][y].get_owner(player):
@@ -91,7 +108,12 @@ class Board:
         self.player_list.pop(player)
 
     def process_areacollision(self, blob_list=list()):
-        # process blob collision
+        """
+        Process area collision which is when opposing blob meet at the space
+        Argument: blob_list: the list of blob that are going to be collided
+        Return: index: the index of the blob who won
+                first_max - second_max: the remaining blob after collision process
+        """
         first_max = max(blob_list)
         index = blob_list.index(first_max)
         blob_list[index] = 0
@@ -102,8 +124,14 @@ class Board:
         return index, first_max - second_max
 
     def process_movementcollision(self, blob1, blob2):
-        # this function is used for when two opposing blob
-        # "hit" each other. Return True if atkowner won
+        """
+        Process movement collision which is when opposing blobs have each
+        other as targets
+        Argument: blob1: the first blob army
+                  blob2: the second blob army
+        Return: winner: True if blob1 won and False if blob1 lost
+                blob: the remaining blob after collision process
+        """
         if (blob1 > blob2):
             return True, blob1 - blob2
         elif (blob2 > blob1):
@@ -112,7 +140,10 @@ class Board:
             return False, 0
     
     def process_encirclement(self):
-        # This function is processed when a group of blob is "surrounded" by other blobs.
+        """
+        This function process the encirclement mechanic check which is
+        2-4 blobs "surround" a blob army thus killing them without losing anything.
+        """
         # Corners and edges require less square to occupy
         # Process: mark all encircled squares, then process the encirclement
         # Square with a base should be ignored
@@ -149,7 +180,11 @@ class Board:
 
 
     def generate_base(self, value, dist):
-        # create new bases that are far away enough from others
+        """
+        Generate new player and bases.
+        Arguments: value: how many players and base will be added
+                   dist: the minimum distance that base has to be from other to be valid
+        """
         for self in range(value):
             is_suitable = False
             while (not is_suitable):
@@ -167,26 +202,34 @@ class Board:
             self.player_list.append(new_player, x, y)
 
     def blob_income(self, income):
-        # Give each base an extra blob
+        """
+        Give each base an extra blob
+        Argument: income: how many blobs to give
+        """
         for player in self.player_list:
             x, y = player.get_base()
             self.board_state[x][y].add_number(income)
 
     def generate_decision(self):
-        # force all players to generate input for the board.
-        # Output should be three list which process_movement can be executed
+        """
+        Force all players to generate input for the board.
+        Output should be three list which process_movement can be executed
+        """
         dcp.dcp_activate(self)
 
     def print_output(self):
-        # Convert board state into data which can be processed and displayed.
+        """
+        Convert board state into data which can be processed and displayed
+        by the output.py
+        """
         return copy.deepcopy(self.board_state)
 
 
 class Space:
     def __init__(self):
-        self.owner = None  # Basically specify if base or blob army or none
-        self.type = 0
-        self.number = 0
+        self.owner = None  # Owner of the space, blob in that space are assumed to be part of the player
+        self.type = 0   # Basically Specify if it is a base or empty space
+        self.number = 0 # How many blob occupy the space
 
     def get_owner(self):
         return self.owner

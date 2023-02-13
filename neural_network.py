@@ -30,6 +30,9 @@ class NeuralNetwork:
         self.output = np.zeros(output_length)
 
     def randomize_weight(self):
+        """
+        Randomize every weight of the neural network
+        """
         for layer in self.hidden:
             for x in self.hidden[layer]:
                 for y in self.hidden[layer][x]:
@@ -37,12 +40,22 @@ class NeuralNetwork:
 
 
     def set_weight(self, layer, x, y, value):
+        """
+        Set a weight in a particular layer with a given value
+        Argument: layer: specify which matrix
+                  x: the row of the weight matrix
+                  y: the column of the weight matrix
+                  value: the weight to be set to
+        """
         self.hidden[layer][x][y] = value
 
     def set_input(self, input = np.array()):
         self.input = input
 
     def evaluate_ann(self):
+        """
+        Given an input set, calculate the ann and give the output
+        """
         self.output = self.input
         for i in range(0,len(self.hidden)):
             self.output = np.matmul(self.hidden[i], self.output)
