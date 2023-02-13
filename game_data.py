@@ -47,12 +47,25 @@ class Board:
             if not action_processed[i]:
             # check if areacollision needs to be processed
                 blob_list = [blob_number_list[i]]
-                blob_owner = [i]
+                blob_owner = [self.board_state[blob_location_list[i][0]][blob_location_list[i][1]].get_owner()]
                 target_space = self.board_state[target_list[i][0]][target_list[i][1]]
                 for j in range(i, len(target_list)):
                     if target_list[i] == target_list[j]:
-                        blob_list.append(target_list[j])
-                        blob_owner.append[j]
+                        # check if it belongs to any player and merge them and mark them as processed
+                        isSame = False
+                        owner_same = 0
+                        for k in range(len(blob_owner)):
+                            if self.board_state[blob_location_list[j][0]][blob_location_list[j][1]].get_owner() == blob_owner[k]:
+                                isSame = True
+                                owner_same = k
+                                break
+                        if isSame:
+                            blob_list[owner_same] += blob_number_list[j]
+                            blob_number_list[j] = 0
+                            action_processed[j] = True
+                        else:
+                            blob_list.append(target_list[j])
+                            blob_owner.append[j]
                 if target_space.get_number() > 0:
                     blob_list.append(target_space.get_number())
                     blob_owner.append[-1]
@@ -72,7 +85,7 @@ class Board:
             if not action_processed[i]:
                 target_space = self.board_state[target_list[i][0]][target_list[i][1]]
                 owner = self.board_state[blob_location_list[i][0]][blob_location_list[i][1]].get_owner()
-                target_space.add_number(blob_number_list[i])
+                target_space.set_number(blob_number_list[i])
                 if (target_space.get_owner() != owner):
                     self.conquer_space(owner, target_list[i][0], target_list[i][1])
                     target_space.add_number(-1)
@@ -199,11 +212,11 @@ class Board:
             self.board_state[x][y].set_type(1)
             self.board_state[x][y].set_number(10)
             self.board_state[x][y].set_owner(new_player)
-            self.player_list.append(new_player, x, y)
+            self.player_list.append(new_player)
 
     def blob_income(self, income):
         """
-        Give each base an extra blob
+        Give each base extra blobs
         Argument: income: how many blobs to give
         """
         for player in self.player_list:
