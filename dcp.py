@@ -34,12 +34,14 @@ def dcp_ann(player = player.Player(), board = gd.Board()):
     """
     import numpy as np
     import math
+    dcp.progress(0)
     player.generate_input_set(board)
     strat_set = player.bignet.evaluate_ann()
     blob_location_list=[]
     blob_number_list=[]
     target_list=[]
     for coord in player.blob_list():
+        dcp.progress(coord / len(player.blob_list()))
         input_set = strat_set
         input_set.append(coord[0] / board.length)
         input_set.append(coord[1] / board.width)
@@ -59,4 +61,5 @@ def dcp_ann(player = player.Player(), board = gd.Board()):
                 blob_number_list.append(num)
                 target_list.append(target)
                 blob -= size
+    dcp.progress(100)
     return blob_location_list, blob_number_list, target_list
