@@ -4,7 +4,7 @@ Using Evolutionary Neutral Network and Distributive Programming in order to simu
 Rules of the strategy games: \
 You start with a base and 10 blobs in a randomly generated position of the board. These blobs represents attack bot really. Within the board there are many rules and objective to follow:
 1) You may move a blob in any direction for the turn. This means you can not move for multiple turn, move a group of blob in one direction or split the group up and move in multiple directions.
-2) Two group of blob owned by you may merge into a space
+2) Two group of blob owned by you may merge in a space
 3) Every time a blob or a group of blobs enter a space not owned by you or in the visual output "coloured by you", the blob expends itself to conquer the space or "colour it"
 4) Whenever a blob or a group of blob meet an opposing blob either by moving towards each other or meeting at a space, each blob expends itself to take out an opposing. In the case of 3 opposing blob moving to a space, then each blob expend itself to take out each other, same with 4 or 5. What this effectively means the highest blob group in the collision wins.
 5) When blobs (that are the same owner) "surround" (read as occupy neighbouring space) another group of blobs, that group of blob is wiped out and conquered by the surrounding blobs.
