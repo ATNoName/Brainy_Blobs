@@ -1,5 +1,6 @@
 from __future__ import annotations
 import random
+import genetic as gene
 import neural_network as nn
 import player as p
 import copy
@@ -150,6 +151,10 @@ class Board:
         if space.get_type() == 1:
             self.delete_player(space.get_owner())
             space.set_type(0)
+            # replace the deleted player with a new one
+            bignet, smallnet = gene.fitness(owner, self)
+            new_player = self.generate_base(1,2)
+            new_player.set_ann(bignet, smallnet)
         space.set_owner(owner)
 
     def delete_player(self, player: p.Player):
@@ -233,6 +238,8 @@ class Board:
             self.board_state[x][y].set_number(10)
             self.board_state[x][y].set_owner(new_player)
             self.player_list.append(new_player)
+            if value == 1:
+                return new_player
 
     def blob_income(self, income):
         """
@@ -248,7 +255,7 @@ class Board:
         Force all players to generate input for the board.
         Output should be three list which process_movement can be executed
         """
-        dcp.dcp_activate(self)
+        return dcp.dcp_activate(self)
 
     def print_output(self):
         """

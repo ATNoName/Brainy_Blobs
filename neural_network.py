@@ -10,6 +10,8 @@ class NeuralNetwork:
     Then, we have a small neural network for all of the small which decide which direction to move and
     how many blobs to split and move.
 
+    The small network will have an input set of the big net's output + 2 for blob coordinates.
+
     Both neural network weights are subject to genetic algorithm.
     """
 

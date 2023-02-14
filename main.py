@@ -8,4 +8,8 @@ def main():
     turn2 = frame_rate * 300 # how many turns for fighting phase
     turn3 = frame_rate * 300 # how many turns before the sim ends
 
-main()
+def test():
+    """
+    Just test a function, edit this at own your accord
+    """
+    pass
