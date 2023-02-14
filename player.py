@@ -23,7 +23,7 @@ class Player:
         self.bignet.randomize_weight()
         self.smallnet = nn.NeuralNetwork(length*width+2, length*width, 1, 5)
         self.smallnet.randomize_weight()
-        
+
     def set_ann(self, bignet = nn.NeuralNetwork(), smallnet = nn.NeuralNetwork()):
         self.bignet = bignet
         self.smallnet = smallnet
@@ -87,11 +87,5 @@ class Player:
                 else:
                     base_location.append((x,y))
         input_set = input_set / np.linalg.norm(input_set)
+        input_set = (input_set / 2) + 0.5
         self.bignet.set_input(input_set)
-
-    def make_decision(self):
-        """
-        Generate output by calling ANN evaluate
-        Return: the output set for the ANN
-        """
-        return self.bignet.evaluate_ann()
