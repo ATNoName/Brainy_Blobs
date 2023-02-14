@@ -12,7 +12,7 @@ def crossover(net1 = nn.NeuralNetwork(), net2 = nn.NeuralNetwork(), rate = 0.0):
             isValid = False
     if len(net1.output) != len(net2.output):
         isValid = False
-    hidden_length = len(net1.output) # if input is first dimension or if output is first dimension
+    hidden_length = 0
     if len(net1.hidden) > 0:
         hidden_length = len(net1.hidden[0])
     if isValid:
@@ -24,13 +24,13 @@ def crossover(net1 = nn.NeuralNetwork(), net2 = nn.NeuralNetwork(), rate = 0.0):
                 isValid = False
                 x,y = (0,0)
                 while not isValid:
-                    x = random.randint(net1.hidden[l].shape()[0])
-                    y = random.randint(net1.hidden[l].shape()[1])
+                    y = random.randint(net1.hidden[l].shape()[0])
+                    x = random.randint(net1.hidden[l].shape()[1])
                     if (x,y) not in cross_list:
                         isValid = True
                 cross_list.append((x,y))
             for c in cross_list:
-                new_net.hidden[l][c[0]][c[1]] = net2.hidden[l][c[0]][c[1]]
+                new_net.hidden[l][c[1]][c[0]] = net2.hidden[l][c[1]][c[0]]
         return new_net
     else:
         print("Not Valid")
@@ -45,7 +45,7 @@ def mutation(net = nn.NeuralNetwork(), mutation = 0):
             x = random.randint(net.hidden.shape()[1])
             y = random.randint(net.hidden.shape()[2])
             if (l,x,y) not in mutated_weight:
-                net.hidden[l][x][y] = random.random()
+                net.hidden[l][y][x] = random.random()
                 mutated_weight.append((l,x,y))
 
 

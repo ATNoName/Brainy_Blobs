@@ -46,7 +46,7 @@ class NeuralNetwork:
                   y: the column of the weight matrix
                   value: the weight to be set to
         """
-        self.hidden[layer][x][y] = value
+        self.hidden[layer][y][x] = value
 
     def set_input(self, input = np.array()):
         self.input = input
