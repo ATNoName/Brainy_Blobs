@@ -1,3 +1,4 @@
+from __future__ import annotations
 import random
 import genetic as gene
 import neural_network as nn
@@ -5,96 +6,141 @@ import player as p
 import copy
 import dcp
 
+
+class Movement:
+    def __init__(self, owner, initial_location: list[int], blob_number: int, target_location: list[int]):
+        self.owner = owner
+        self.initial_location = initial_location
+        self.blob_number = blob_number
+        self.target_location = target_location
+    
+    def process_collision(self, other: Movement) -> None:
+        """ Sets blob numbers of movements to result after collision
+        Args: other: other Movement to process collision with
+        """
+        if self.blob_number == other.blob_number:
+            self.blob_number = 0
+            other.blob_number = 0
+        elif self.blob_number > other.blob_number:
+            self.blob_number -= other.blob_number
+            other.blob_number = 0
+        else:
+            self.blob_number = 0
+            other.blob_number -= self.blob_number
+            
+
 class Board:
     # Note: the action should be simultaneous
-    def __init__(self, length, width):
+    def __init__(self, length: int, width: int) -> None:
         self.board_state = list(list(Space() * length)) * width
         self.player_list = list()
         self.length = length
         self.width = width
         self.turn_counter = 0
+    
+    def get_space_at(self, location: list[int])  -> Space:
+        """
+        Args: location[]: = [x, y] for location on board_state
+        Return: Space: Space at location
+        """
+        return self.board_state[location[0]][location[1]]
 
-    def process_movement(self, blob_location_list=[], blob_number_list=[], target_list=[]):
+    def process_movement(self, initial_location_list: list[list[int]] = [], blob_number_list: list[int] = [], target_location_list: list[list[int]] = []) -> None:
         """
         Process all inputs from players from make_decisions. The index of
         the argument make up the input for the player
-        Arguments: blob_location_list[]: the initial location of the blobs
-        blob_number_list[]: the number of blob that are going to move
-        target_list[]: the target location of the blob.
+        Arguments: blob_location_list[]: the initial location of the blobs the player will move
+        blob_number_list[]: the number of blobs the player will move
+        target_list[]: the target location of the blobs.
         """
-        action_processed = [False]*len(target_list)
+        unprocessed_movements = [Movement(self.get_space_at(initial_location_list[i]).get_owner(), 
+                                          initial_location_list[i], 
+                                          blob_number_list[i], 
+                                          target_location_list[i]) for i in range(len(initial_location_list))]
         # Remove all blobs that are moving from space
-        for i in range(len(target_list)):
-            start_space = self.board_state[blob_location_list[i][0]][blob_location_list[i][1]]
-            start_space.add_number(-blob_number_list[i])
-        # Process all movement collisions
-        for i in range(len(target_list)):
-            if not action_processed[i]:
-                # check if movementcollision needs to be processed
-                if target_list[i] in blob_location_list:
-                    target_index = blob_location_list.index(target_list[i])
-                    if target_list[target_index] == blob_location_list[i]:
-                        result = self.process_movementcollision(blob_number_list[i], blob_number_list[target_index])
-                        if not result[0]:
-                            blob_number_list[i] = 0
-                            blob_number_list[target_index] = result[1]
-                            action_processed[i] = True
-                        else:
-                            blob_number_list[i] = result[1]
-                            blob_number_list[target_index] = 0
-                            action_processed[target_index] = True
-        # Process area collisions
-        for i in range(len(target_list)):
-            if not action_processed[i]:
-            # check if areacollision needs to be processed
-                blob_list = [blob_number_list[i]]
-                blob_owner = [self.board_state[blob_location_list[i][0]][blob_location_list[i][1]].get_owner()]
-                target_space = self.board_state[target_list[i][0]][target_list[i][1]]
-                for j in range(i, len(target_list)):
-                    if target_list[i] == target_list[j]:
-                        # check if it belongs to any player and merge them and mark them as processed
-                        isSame = False
-                        owner_same = 0
-                        for k in range(len(blob_owner)):
-                            if self.board_state[blob_location_list[j][0]][blob_location_list[j][1]].get_owner() == blob_owner[k]:
-                                isSame = True
-                                owner_same = k
-                                break
-                        if isSame:
-                            blob_list[owner_same] += blob_number_list[j]
-                            blob_number_list[j] = 0
-                            action_processed[j] = True
-                        else:
-                            blob_list.append(target_list[j])
-                            blob_owner.append[j]
-                if target_space.get_number() > 0:
-                    blob_list.append(target_space.get_number())
-                    blob_owner.append[-1]
-                if len(blob_list) != 1:
-                    result = self.process_areacollision(blob_list)
-                    for player in blob_owner:
-                        if result[0] != blob_owner[player]:
-                            if blob_owner[player] >= 0:
-                                action_processed[player] = True
-                                blob_number_list[player] = 0
-                            else:
-                                target_space.set_number(0)
-                        else:
-                            blob_number_list = result[1]
-        # Move any survivors to their target square and process any area conquest
-        for i in range(len(target_list)):
-            if not action_processed[i]:
-                target_space = self.board_state[target_list[i][0]][target_list[i][1]]
-                owner = self.board_state[blob_location_list[i][0]][blob_location_list[i][1]].get_owner()
-                target_space.set_number(blob_number_list[i])
-                if (target_space.get_owner() != owner):
-                    self.conquer_space(owner, target_list[i][0], target_list[i][1])
-                    target_space.add_number(-1)
-
+        for movement in unprocessed_movements:
+            start_space = self.get_space_at(movement.initial_location)
+            start_space.add_number(-movement.blob_number)
+        
+        # Process all movement collisions (collisions where two groups of blobs move towards each other)
+        self.process_movement_collisions(unprocessed_movements)
+        
+        # Process area collisions for movements with same owners, record collisions with different owners in lists
+        self.process_area_collisions(unprocessed_movements)
+        
+        # now that all collisions are processed, execute movements
+        for movement in unprocessed_movements:
+            target_space = self.get_space_at(movement.target_location)
+            if target_space.get_owner() == None:
+                target_space.set_owner(movement.owner)
+                target_space.set_number(movement.blob_number)
+            elif target_space.get_owner() == movement.owner:
+                target_space.add_number(movement.blob_number)
+            else:
+                if movement.blob_number > target_space.get_number():
+                    self.conquer_space(self, movement.owner, target_space)
+                target_space.set_number(abs(movement.blob_number - target_space.get_number())
+        
         # Process encirclement
         self.process_encirclement()
     
-    def conquer_space(self, owner, x, y):
+    def process_movement_collisions(self, unprocessed_movements: list[Movement]) -> None:
+        """
+        Simplify the movements list so that there are no more collisions where two groups of blobs move towards each other
+        Args: unprocessed_movements: movements list to be simplified
+        """
+        # Compare for each unique pair of indices in unprocessed movements
+        for i in range(len(unprocessed_movements)):
+            movement_i = unprocessed_movements[i]
+            for j in range(i + 1, len(unprocessed_movements)):
+                movement_j = unprocessed_movements[j]
+                # if movement collision between movements
+                if movement_i.initial_location == movement_j.target_location and movement_j.initial_location == movement_i.target_location:
+                    movement_i.process_collision(movement_j)
+        # delete processed movements (movements with blob_number of 0) from unprocessed_movements
+        for index in sorted([i for i, x in enumerate(unprocessed_movements) if x.blob_number == 0], reverse=True):
+            del unprocessed_movements[index]
+    
+    def process_area_collisions(self, unprocessed_movements: list[Movement]) -> None:
+        """
+        Simplify the movements list so that there are no more collisions where two groups of blobs meet at a space
+        Args: unprocessed_movements: movements list to be simplified
+        """
+        collision_movements = []
+        collision_targets = []
+        for i in range(len(unprocessed_movements)):
+            movement_i = unprocessed_movements[i]
+            for j in range(i + 1, len(unprocessed_movements)):
+                movement_j = unprocessed_movements[j]
+                if movement_i.target_location == movement_j.target_location:
+                    if movement_i.owner == movement_j.owner:
+                        movement_i.blob_number += movement_j.blob_number
+                        movement_j.blob_number = 0
+                    else:
+                        target = movement_i.target_location
+                        if target not in collision_targets:
+                            collision_targets.append(target)
+                            collision_movements.append([])
+                        idx = collision_targets.index(target)
+                        for movement in [movement_i, movement_j]:
+                            if movement not in collision_movements[idx]:
+                                collision_movements[idx].append(movement)
+        
+        # Process area collisions between movements with different owners
+        for i in range(len(collision_targets)):
+            collision_movements[i].sort(key=lambda movement: movement.blob_number)
+            n = len(collision_movements)
+            result_blob_number = collision_movements[i].blob_number[n - 1] - collision_movements[i].blob_number[n - 2]
+            if result_blob_number > 0:
+                n -= 1
+                collision_movements[i].blob_number[n - 1] = result_blob_number
+            for j in range(n):
+                collision_movements[i][j].blob_number = 0
+        # delete processed movements (movements with blob_number of 0) from unprocessed_movements
+        for index in sorted([i for i, x in enumerate(unprocessed_movements) if x.blob_number == 0], reverse=True):
+            del unprocessed_movements[index]
+    
+    def conquer_space(self, owner: p.Player, space: Space) -> None:
         """
         Process space conquest which just set the space owner to the conquering player
         If the space has an opposing base, that base is deleted and player elimination is processed
@@ -102,60 +148,57 @@ class Board:
         x: the x coordinate of the space
         y: the y coordinate of the space
         """
-        if self.board_state[x][y].get_type() == 1:
-            self.delete_player(self.board_state[x][y].get_owner())
-            self.board_state[x][y].set_type(0)
+        if space.get_type() == 1:
+            self.delete_player(space.get_owner())
+            space.set_type(0)
+            # replace the deleted player with a new one
             bignet, smallnet = gene.fitness(owner, self)
             new_player = self.generate_base(1,2)
             new_player.set_ann(bignet, smallnet)
-        self.board_state.set_owner(owner)
+        space.set_owner(owner)
 
-    def delete_player(self, player):
+    def delete_player(self, player: p.Player):
         """
         Search for all player-owner blobs and delete them.
         Also search for player-owned space and revert them to neutral territory
         Remove player from list at the end
         Argument: player: the player marked for deletion
         """
-        for x in self.board_state:
-            for y in self.board_state[x]:
-                if self.board_state[x][y].get_owner(player):
-                    self.board_state.set_owner(None)
-                    self.board_state.set_number(0)
+        for space_column in self.board_state:
+            for space in self.board_state[x]:
+                if space.get_owner() == player:
+                    space.set_owner(None)
+                    space.set_number(0)
         self.player_list.pop(player)
-
-    def process_areacollision(self, blob_list=list()):
-        """
-        Process area collision which is when opposing blob meet at the space
-        Argument: blob_list: the list of blob that are going to be collided
-        Return: index: the index of the blob who won
-                first_max - second_max: the remaining blob after collision process
-        """
-        first_max = max(blob_list)
-        index = blob_list.index(first_max)
-        blob_list[index] = 0
-        second_max = max(blob_list)
-        blob_list[index] = first_max
-        if first_max == second_max:
-            return None, 0
-        return index, first_max - second_max
-
-    def process_movementcollision(self, blob1, blob2):
-        """
-        Process movement collision which is when opposing blobs have each
-        other as targets
-        Argument: blob1: the first blob army
-                  blob2: the second blob army
-        Return: winner: True if blob1 won and False if blob1 lost
-                blob: the remaining blob after collision process
-        """
-        if (blob1 > blob2):
-            return True, blob1 - blob2
-        elif (blob2 > blob1):
-            return False, blob2 - blob1
-        else:
-            return False, 0
     
+    def position_encircled(self, position: list[int]) -> None | p.Player:
+        """
+        Args: position: position of space on board
+        Return: None | p.Player: encircled by p.Player, None if not encircled
+        """
+        position_owner = self.get_space_at(position)
+        prev_adjacent_owner = None
+        for i in (0, 1):
+            for j in (-1, 1):
+                try:
+                    adjacent_space = self.get_space_at([position[0] + i*j, position[1] + (not i)*j])
+                    if adjacent_space.get_owner() == None or adjacent_space.get_number() == 0:
+                        return None
+                    if prev_adjacent_owner == None:
+                        if adjacent_space.get_owner() != position_owner:
+                            prev_adjacent_owner = adjacent_space.get_owner()
+                        else:
+                            return None
+                    elif prev_adjacent_owner != adjacent_space.get_owner():
+                        return None
+                    else:
+                        prev_adjacent_owner = adjacent_space.get_owner()
+                except IndexError:
+                    pass
+                
+        return prev_adjacent_owner
+        
+                                        
     def process_encirclement(self):
         """
         This function process the encirclement mechanic check which is
@@ -164,36 +207,14 @@ class Board:
         # Corners and edges require less square to occupy
         # Process: mark all encircled squares, then process the encirclement
         # Square with a base should be ignored
-        encircled = []
         for x in range(self.length):
             for y in range(self.width):
-                space = self.board_state[x][y]
-                if space.get_type() == 0:
-                    neighbouring_square = []
-                    if (not ((x + 1) == self.length)):
-                        neighbouring_square.append(self.board_state[x+1][y])
-                    if (not ((y + 1) == self.width)):
-                        neighbouring_square.append(self.board_state[x][y+1])
-                    if (not ((x -1) == -1)):
-                        neighbouring_square.append(self.board_state[x-1][y])
-                    if (not ((y -1) == -1)):
-                        neighbouring_square.append(self.board_state[x][y-1])
-                    # Condition:
-                    # 1) check if neighbouring_square belong to same owner
-                    # 2) check if neighbouring square oppose center owner
-                    # 3) check if neighbouring_square has at least 1 blob
-                    atkowner = neighbouring_square[0].get_owner()
-                    if atkowner != space.get_owner():
-                        is_encircled = True
-                        for square in neighbouring_square:
-                            if square.get_owner() != atkowner or square.get_number() == 0:
-                                is_encircled = False
-                        if is_encircled:
-                            encircled.append((space, atkowner))
-        # Eliminate the encirclement
-        for square in encircled:
-            square[0].set_number(0)
-            square[0].set_owner(square[1])
+                space = self.get_space_at([x, y])
+                if space.type != 1:
+                    encircling_player = self.position_encircled([x, y])
+                    if encircling_player != None:
+                        space.set_owner(encircling_player)
+                        space.set_number(0)
 
 
     def generate_base(self, value, dist):
@@ -247,7 +268,7 @@ class Board:
 class Space:
     def __init__(self):
         self.owner = None  # Owner of the space, blob in that space are assumed to be part of the player
-        self.type = 0   # Basically Specify if it is a base or empty space
+        self.type = 0   # 0 = empty space, 1 = base space
         self.number = 0 # How many blob occupy the space
 
     def get_owner(self):
