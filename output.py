@@ -1,11 +1,10 @@
-import game_data
-from neural_network import Player
+import game_data as gd
 import PIL
 import numpy as np
 import cv2
 import glob
 
-def generateImage(board = game_data.Board()):
+def generateImage(board = gd.Board()):
     """
     This generator should have three phases
     1) create a new image canvas (as a matrix)

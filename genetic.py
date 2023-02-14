@@ -1,6 +1,8 @@
 import numpy as np
 import random
 import neural_network as nn
+import game_data as gd
+import player
 
 def crossover(net1 = nn.NeuralNetwork(), net2 = nn.NeuralNetwork(), rate = 0.0):
     # First check if the neutral network are of the same length before crossing over
@@ -17,15 +19,15 @@ def crossover(net1 = nn.NeuralNetwork(), net2 = nn.NeuralNetwork(), rate = 0.0):
         hidden_length = len(net1.hidden[0])
     if isValid:
         new_net = nn.NeuralNetwork(len(net1.input), hidden_length, len(net1.hidden), len(net1.output))
-        for l in range(len(net1.hidden)):
-            cross = rate * net1.hidden[l].size()
+        for l in range(len(net2.hidden)):
+            cross = (1 - rate) * net2.hidden[l].size()
             cross_list = list()
             for c in range(cross):
                 isValid = False
                 x,y = (0,0)
                 while not isValid:
-                    y = random.randint(net1.hidden[l].shape()[0])
-                    x = random.randint(net1.hidden[l].shape()[1])
+                    y = random.randint(net2.hidden[l].shape()[0])
+                    x = random.randint(net2.hidden[l].shape()[1])
                     if (x,y) not in cross_list:
                         isValid = True
                 cross_list.append((x,y))
@@ -35,7 +37,7 @@ def crossover(net1 = nn.NeuralNetwork(), net2 = nn.NeuralNetwork(), rate = 0.0):
     else:
         print("Not Valid")
                 
-def mutation(net = nn.NeuralNetwork(), mutation = 0):
+def mutate(net = nn.NeuralNetwork(), mutation = 0):
     # Change weights by random
     mutated_weight = []
     for mut in mutation:
@@ -48,4 +50,13 @@ def mutation(net = nn.NeuralNetwork(), mutation = 0):
                 net.hidden[l][y][x] = random.random()
                 mutated_weight.append((l,x,y))
 
-
+def fitness(atkplayer = player.Player(), board = gd.Board()):
+    # return a neural network
+    randplayer = random.randint(len(board.player_list))
+    atkbignet = atkplayer.bignet
+    atksmallnet = atkplayer.smallnet
+    randbignet = randplayer.bignet
+    randsmallnet = randplayer.smallnet
+    newbignet = mutate(crossover(atkbignet,randbignet), 5)
+    newsmallnet = mutate(crossover(atksmallnet,randsmallnet), 5)
+    return newbignet, newsmallnet

@@ -13,17 +13,20 @@ class Direction(enum):
     West = 4
 
 class Player:
-    def __init__(self, id, colour=(0,0,0), x=-1, y=-1, length = 0, width = 0, net = nn.NeuralNetwork()):
+    def __init__(self, id, colour=(0,0,0), x=-1, y=-1, length = 0, width = 0):
         self.id = id
         self.colour = colour
         self.baseX = x
         self.baseY = y
         self.blob_location = list((x,y)) # location of all blobs
-        if net is None:
-            self.net = nn.NeuralNetwork(length*width, length*width, 3, length*width)
-            self.net.randomize_weight()
-        else:
-            self.net = net
+        self.bignet = nn.NeuralNetwork(length*width, length*width, 3, length*width)
+        self.bignet.randomize_weight()
+        self.smallnet = nn.NeuralNetwork(length*width+2, length*width, 1, 5)
+        self.smallnet.randomize_weight()
+        
+    def set_ann(self, bignet = nn.NeuralNetwork(), smallnet = nn.NeuralNetwork()):
+        self.bignet = bignet
+        self.smallnet = smallnet
 
     def get_base(self):
         """
@@ -84,11 +87,11 @@ class Player:
                 else:
                     base_location.append((x,y))
         input_set = input_set / np.linalg.norm(input_set)
-        self.net.input = input_set
+        self.bignet.set_input(input_set)
 
     def make_decision(self):
         """
         Generate output by calling ANN evaluate
         Return: the output set for the ANN
         """
-        return self.net.evaluate_ann()
+        return self.bignet.evaluate_ann()

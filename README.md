@@ -25,8 +25,7 @@ Each player is given neural networks which will make the decisions for them and 
 DCP is used to do all of the ANN calculation which consists for multiple matrix multiplication per player. On a single core, this would take years, but on DCP, this is reduce the time to minutes or even seconds.
 
 TODO: \
-Figure out the ANN setup for each player \
-Configure DCP to calculate ANN \
+Configure DCP to calculate ANN (to be resolved) \
 Clean up game_data \
-Implement the fitness function (for every player eliminated, new player is created whose ANN weight are based off of the eliminator's weights and a random player's weights) \
+Debug every function \
 Implement output
