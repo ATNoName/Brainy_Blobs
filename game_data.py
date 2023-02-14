@@ -37,6 +37,7 @@ class Board:
         self.length = length
         self.width = width
         self.turn_counter = 0
+        self.respawn = 1 # Check if respawn is enabled
     
     def get_space_at(self, location: list[int])  -> Space:
         """
@@ -79,7 +80,7 @@ class Board:
             else:
                 if movement.blob_number > target_space.get_number():
                     self.conquer_space(self, movement.owner, target_space)
-                target_space.set_number(abs(movement.blob_number - target_space.get_number())
+                target_space.set_number(abs(movement.blob_number - target_space.get_number()))
         
         # Process encirclement
         self.process_encirclement()
@@ -152,9 +153,10 @@ class Board:
             self.delete_player(space.get_owner())
             space.set_type(0)
             # replace the deleted player with a new one
-            bignet, smallnet = gene.fitness(owner, self)
-            new_player = self.generate_base(1,2)
-            new_player.set_ann(bignet, smallnet)
+            if self.respawn:
+                bignet, smallnet = gene.fitness(owner, self)
+                new_player = self.generate_base(1,2)
+                new_player.set_ann(bignet, smallnet)
         space.set_owner(owner)
 
     def delete_player(self, player: p.Player):
@@ -165,7 +167,7 @@ class Board:
         Argument: player: the player marked for deletion
         """
         for space_column in self.board_state:
-            for space in self.board_state[x]:
+            for space in self.board_state[space_column]:
                 if space.get_owner() == player:
                     space.set_owner(None)
                     space.set_number(0)
