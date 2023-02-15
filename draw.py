@@ -6,7 +6,6 @@ import cv2
 import glob
 """
 import pygame as pg
-import colorsys
 import pygame.gfxdraw as gfxdraw
 
 
@@ -117,4 +116,5 @@ def generateImage():
     pg.quit()
 
 
-generateImage()
+if __name__ == "main":
+    generateImage()
