@@ -1,12 +1,12 @@
 import random
 import enum
 import numpy as np
-import neutral_network as nn
+import neural_network as nn
 import game_data
 
 # Get all inputs for the player before implement ANN
 
-class Direction(enum):
+class Direction(enum.Enum):
     North = 1
     East = 2
     South = 3
@@ -24,7 +24,7 @@ class Player:
         self.smallnet = nn.NeuralNetwork(length*width+2, length*width, 1, 5)
         self.smallnet.randomize_weight()
         
-    def set_ann(self, bignet = nn.NeuralNetwork(), smallnet = nn.NeuralNetwork()):
+    def set_ann(self, bignet: nn.NeuralNetwork, smallnet: nn.NeuralNetwork):
         self.bignet = bignet
         self.smallnet = smallnet
 
@@ -34,7 +34,10 @@ class Player:
         """
         return (self.baseX, self.baseY)
     
-    def move_blob(self, direction = Direction(), number=0, x=0, y=0):
+    def get_colour(self) -> tuple[int]:
+        return self.colour
+    
+    def move_blob(self, direction: Direction, number=0, x=0, y=0):
         """
         The player input for a blob army in that area. Used for process_movement
         Argument: direction: which direction to go

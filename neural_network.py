@@ -50,7 +50,7 @@ class NeuralNetwork:
         """
         self.hidden[layer][y][x] = value
 
-    def set_input(self, input = np.array()):
+    def set_input(self, input = np.array([])):
         self.input = input
 
     def evaluate_ann(self):
