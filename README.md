@@ -1,4 +1,4 @@
-# DCP_games
+# Brainy_Blobs
 Using Evolutionary Neutral Network and Distributive Programming in order to simulate a prototypical strategy game.
 
 Rules of the strategy games: \
