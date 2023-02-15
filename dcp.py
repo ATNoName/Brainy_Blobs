@@ -1,6 +1,6 @@
 from bifrost import dcp
 import math
-import neutral_network as nn
+import neural_network as nn
 import player
 import game_data as gd
 # implement dcp here

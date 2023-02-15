@@ -8,9 +8,11 @@ import glob
 """
 import pygame as pg
 
+
 def exampleBoard() -> gd.Board:
     board = gd.Board(8, 8)
     board.generate_base(4, 7)
+
 
 def circle(surface, pos, r, fill, stroke):
     pg.gfxdraw.filled_circle(surface, pos[0], pos[1], r, fill)

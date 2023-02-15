@@ -4,7 +4,7 @@ import neural_network as nn
 import game_data as gd
 import player
 
-def crossover(net1 = nn.NeuralNetwork(), net2 = nn.NeuralNetwork(), rate = 0.0):
+def crossover(net1: nn.NeuralNetwork, net2: nn.NeuralNetwork, rate = 0.0):
     # First check if the neutral network are of the same length before crossing over
     isValid = True
     if len(net1.input) != len(net2.input):
@@ -37,7 +37,7 @@ def crossover(net1 = nn.NeuralNetwork(), net2 = nn.NeuralNetwork(), rate = 0.0):
     else:
         print("Not Valid")
                 
-def mutate(net = nn.NeuralNetwork(), mutation = 0):
+def mutate(net: nn.NeuralNetwork, mutation = 0):
     # Change weights by random
     mutated_weight = []
     for mut in mutation:
@@ -50,7 +50,7 @@ def mutate(net = nn.NeuralNetwork(), mutation = 0):
                 net.hidden[l][y][x] = random.random()
                 mutated_weight.append((l,x,y))
 
-def fitness(atkplayer = player.Player(), board = gd.Board()):
+def fitness(atkplayer: player.Player, board):
     # return a neural network
     randplayer = random.randint(len(board.player_list))
     atkbignet = atkplayer.bignet
