@@ -4,7 +4,7 @@ import genetic as gene
 import neural_network as nn
 import player as p
 import copy
-import dcp
+import distributive as dis
 import numpy as np
 
 
@@ -258,7 +258,7 @@ class Board:
         Force all players to generate input for the board.
         Output should be three list which process_movement can be executed
         """
-        return dcp.dcp_activate(self)
+        return dis.dcp_activate(self)
 
     def print_output(self):
         """
