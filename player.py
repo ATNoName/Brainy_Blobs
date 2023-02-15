@@ -56,39 +56,3 @@ class Player:
         else:
             target = (x-1,y)
         return ((x,y), number, target)
-
-    def blob_search(self, board = game_data.Board()):
-        """
-        Get all blob location owned by the player
-        Argument: board: the arena
-        """
-        self.blob_location = list()
-        for x in board.width:
-            for y in board.length:
-                if board.board_state.getowner() == self:
-                    self.blob_location.append((x,y))
-        return
-    
-    def generate_input_set(self, board = game_data.Board()):
-        input_set = np.zeros(board.length*board.width)
-        base_location = []
-        for x in range(board.length):
-            for y in range(board.width):
-                """
-                Idea here, area with high enemy blob have a high input value
-                Wheras, area with high player blob have low input value
-                Normalize the entire vector, divide by 2 and add 0.5
-                This formula means that player controlled areas are <0.5 and
-                enemy controlled areas are >0.5.
-                Bases are forced to be set to 0 and 1.
-                """
-                if (board.board_state[x][y].get_type() == 0):
-                    if (board.board_state[x][y].get_owner() == self):
-                        input_set[x*board.length+y] = - board.board_state[x][y].get_number()
-                    else:
-                        input_set[x*board.length+y] = board.board_state[x][y].get_number()
-                else:
-                    base_location.append((x,y))
-        input_set = input_set / np.linalg.norm(input_set)
-        input_set = (input_set / 2) + 0.5
-        self.bignet.set_input(input_set)

@@ -5,6 +5,7 @@ import neural_network as nn
 import player as p
 import copy
 import dcp
+import numpy as np
 
 
 class Movement:
@@ -32,7 +33,7 @@ class Movement:
 class Board:
     # Note: the action should be simultaneous
     def __init__(self, length: int, width: int) -> None:
-        self.board_state = list(list(Space() * length)) * width
+        self.board_state = [[Space() for i in range(length)] for j in range(width)]
         self.player_list = list()
         self.length = length
         self.width = width
@@ -209,8 +210,8 @@ class Board:
         # Corners and edges require less square to occupy
         # Process: mark all encircled squares, then process the encirclement
         # Square with a base should be ignored
-        for x in range(self.length):
-            for y in range(self.width):
+        for x in range(self.width):
+            for y in range(self.length):
                 space = self.get_space_at([x, y])
                 if space.type != 1:
                     encircling_player = self.position_encircled([x, y])
@@ -265,6 +266,43 @@ class Board:
         by the output.py
         """
         return copy.deepcopy(self.board_state)
+    
+    def blob_search(self, player: p.Player):
+        """
+        Get all blob location owned by the player
+        Argument: board: the arena
+        """
+        blob_location = list()
+        for x in range(self.width):
+            for y in range(self.length):
+                if self.get_space_at((x, y)).get_owner() == self:
+                    self.blob_location.append((x,y))
+        return blob_location
+    
+    def generate_input_set(self, player: p.Player):
+        input_set = np.zeros(self.width*self.length)
+        base_location = []
+        for x in range(self.width):
+            for y in range(self.length):
+                """
+                Idea here, area with high enemy blob have a high input value
+                Wheras, area with high player blob have low input value
+                Normalize the entire vector, divide by 2 and add 0.5
+                This formula means that player controlled areas are <0.5 and
+                enemy controlled areas are >0.5.
+                Bases are forced to be set to 0 and 1.
+                """
+                space = self.get_space_at([x, y])
+                if (space.get_type() == 0):
+                    if (space.get_owner() == player):
+                        input_set[x*self.length+y] = -space.get_number()
+                    else:
+                        input_set[x*self.length+y] = space.get_number()
+                else:
+                    base_location.append((x,y))
+        input_set = input_set / np.linalg.norm(input_set)
+        input_set = (input_set / 2) + 0.5
+        player.bignet.set_input(input_set)
 
 
 class Space:
