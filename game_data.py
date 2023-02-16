@@ -38,6 +38,7 @@ class Board:
         self.length = length
         self.width = width
         self.turn_counter = 0
+        self.income = 1
         self.respawn = 1 # Check if respawn is enabled
     
     def get_space_at(self, location: list[int])  -> Space:
@@ -258,6 +259,15 @@ class Board:
         Force all players to generate input for the board.
         Output should be three list which process_movement can be executed
         """
+        blob_list = []
+        bignet_list = []
+        smallnet_list = []
+        input_list = []
+        for player in self.player_list:
+            blob_list.append(self.blob_search(player))
+            bignet_list.append(player.bignet.hidden.tolist())
+            smallnet_list.append(player.smallnet.hidden.tolist())
+            input_list.append(self.generate_input_set(player).tolist())
         return dis.dcp_activate(self)
 
     def print_output(self):
@@ -275,7 +285,7 @@ class Board:
         blob_location = list()
         for x in range(self.width):
             for y in range(self.length):
-                if self.get_space_at((x, y)).get_owner() == self:
+                if self.get_space_at((x, y)).get_owner() == self and self.get_space_at((x, y)).get_number() > 0:
                     self.blob_location.append((x,y))
         return blob_location
     
@@ -302,7 +312,7 @@ class Board:
                     base_location.append((x,y))
         input_set = input_set / np.linalg.norm(input_set)
         input_set = (input_set / 2) + 0.5
-        player.bignet.set_input(input_set)
+        return input_set
 
 
 class Space:
