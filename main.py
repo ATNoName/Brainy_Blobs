@@ -1,5 +1,6 @@
 import game_data as gd
 import output
+
 # This is for running the function
 def main():
     population = 10

@@ -156,7 +156,7 @@ class Board:
             space.set_type(0)
             # replace the deleted player with a new one
             if self.respawn:
-                bignet, smallnet = gene.fitness(owner, self)
+                bignet, smallnet = gene.fitness(owner, self.player_list)
                 new_player = self.generate_base(1,2)
                 new_player.set_ann(bignet, smallnet)
         space.set_owner(owner)
