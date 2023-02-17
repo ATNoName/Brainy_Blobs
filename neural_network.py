@@ -19,15 +19,15 @@ class NeuralNetwork:
         self.input_length = input_length
         self.hidden = []
         if (layer_count > 0):
-            for layer in range(layer_count - 1):
+            for layer in range(layer_count):
                 if layer == 0:
-                    self.hidden.append(np.zeros((hidden_length, input_length)))
-                elif layer == layer_count - 2:
-                    self.hidden.append(np.zeros((output_length, hidden_length)))
+                    self.hidden.append(np.zeros((input_length, hidden_length)))
+                elif layer == layer_count - 1:
+                    self.hidden.append(np.zeros((hidden_length, output_length)))
                 else:
                     self.hidden.append(np.zeros((hidden_length, hidden_length)))
         else:
-            self.hidden.append(np.zeros((output_length, input_length)))
+            self.hidden.append(np.zeros((input_length, output_length)))
         self.output_length = output_length
 
     def randomize_weight(self):
@@ -48,4 +48,4 @@ class NeuralNetwork:
                   y: the column of the weight matrix
                   value: the weight to be set to
         """
-        self.hidden[layer][y][x] = value
+        self.hidden[layer][x][y] = value

@@ -1,5 +1,5 @@
 import game_data as gd
-import output
+#import output
 import distributive as dis
 import player as p
 
@@ -19,23 +19,24 @@ def generate_decision(board = gd.Board):
         bignet_list.append(player.bignet.hidden)
         smallnet_list.append(player.smallnet.hidden)
         input_list.append(board.generate_input_set(player))
+    
     return dis.dcp_activate(blob_list, bignet_list, smallnet_list, input_list, board)
 
 def main():
-    population = 10
-    length = 40
-    width = 25
+    population = 2
+    length = 10
+    width = 5
     frame_rate = 15 # how many image per second
-    turn1 = frame_rate * 600 # how many turns for learning phase
-    turn2 = frame_rate * 300 # how many turns for fighting phase
-    turn3 = frame_rate * 300 # how many turns before the sim ends
+    turn1 = frame_rate * 60 # how many turns for learning phase
+    turn2 = frame_rate * 60 # how many turns for fighting phase
+    turn3 = frame_rate * 30 # how many turns before the sim ends
     board = gd.Board(length, width)
     board.generate_base(population, 2)
-    output.generateImage(board.print_output())
+    #output.generateImage(board.print_output())
     for turn in range(turn1):
         blob_location_list, blob_number_list, target_list = generate_decision(board)
         board.process_movement(blob_location_list, blob_number_list, target_list)
-        output.generateImage(board.print_output())
+        #output.generateImage(board.print_output())
         board.blob_income(board.income)
         board.turn_counter += 1
     board.respawn = 0
@@ -43,14 +44,14 @@ def main():
     for turn in range(turn2):
         blob_location_list, blob_number_list, target_list = generate_decision(board)
         board.process_movement(blob_location_list, blob_number_list, target_list)
-        output.generateImage(board.print_output())
+        #output.generateImage(board.print_output())
         board.blob_income(board.income)
         board.turn_counter += 1
     board.income = 0
     for turn in range(turn3):
         blob_location_list, blob_number_list, target_list = generate_decision(board)
         board.process_movement(blob_location_list, blob_number_list, target_list)
-        output.generateImage(board.print_output())
+        #output.generateImage(board.print_output())
         board.blob_income(board.income)
         board.turn_counter += 1
         if (bool(blob_location_list)):

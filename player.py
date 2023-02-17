@@ -18,7 +18,7 @@ class Player:
         self.blob_location = list((x,y)) # location of all blobs
         self.bignet = nn.NeuralNetwork(length*width, length*width, 3, length*width)
         self.bignet.randomize_weight()
-        self.smallnet = nn.NeuralNetwork(length*width+2, length*width, 1, 5)
+        self.smallnet = nn.NeuralNetwork((length*width)+2, length*width, 1, 5)
         self.smallnet.randomize_weight()
         
     def set_ann(self, bignet: nn.NeuralNetwork, smallnet: nn.NeuralNetwork):

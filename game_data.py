@@ -267,8 +267,8 @@ class Board:
         blob_location = list()
         for x in range(self.width):
             for y in range(self.length):
-                if self.get_space_at((x, y)).get_owner() == self and self.get_space_at((x, y)).get_number() > 0:
-                    self.blob_location.append((x,y))
+                if self.get_space_at((x, y)).get_owner() == player and self.get_space_at((x, y)).get_number() > 0:
+                    blob_location.append((x,y))
         return blob_location
     
     def generate_input_set(self, player: p.Player):
@@ -287,13 +287,17 @@ class Board:
                 space = self.get_space_at([x, y])
                 if (space.get_type() == 0):
                     if (space.get_owner() == player):
-                        input_set[x*self.length+y] = -space.get_number()
+                        input_set[x*self.width+y] = -space.get_number()
                     else:
-                        input_set[x*self.length+y] = space.get_number()
+                        input_set[x*self.width+y] = space.get_number()
                 else:
                     base_location.append((x,y))
         if input_set.max() - input_set.min() != 0:
             input_set = (input_set - input_set.min()) / (input_set.max() - input_set.min())
+        for base in base_location:
+            space = self.get_space_at(base)
+            if space.get_owner() == player:
+                input_set[x*self.width+y] = 1
         return input_set
     
 
