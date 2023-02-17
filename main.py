@@ -2,6 +2,7 @@ import game_data as gd
 import output
 import distributive as dis
 import player as p
+import pygame as pg
 
 # This is for running the function
 
@@ -31,11 +32,14 @@ def main():
     turn3 = frame_rate * 300 # how many turns before the sim ends
     board = gd.Board(length, width)
     board.generate_base(population, 2)
-    output.generateImage(board.print_output())
+    pg.init()
+    window_size = (1920, 1080)
+    surface = pg.display.set_mode(window_size)
+    output.generateImage(board.print_output(), surface, window_size)
     for turn in range(turn1):
         blob_location_list, blob_number_list, target_list = generate_decision(board)
         board.process_movement(blob_location_list, blob_number_list, target_list)
-        output.generateImage(board.print_output())
+        output.generateImage(board.print_output(), surface, window_size)
         board.blob_income(board.income)
         board.turn_counter += 1
     board.respawn = 0
@@ -43,18 +47,24 @@ def main():
     for turn in range(turn2):
         blob_location_list, blob_number_list, target_list = generate_decision(board)
         board.process_movement(blob_location_list, blob_number_list, target_list)
-        output.generateImage(board.print_output())
+        output.generateImage(board.print_output(), surface, window_size)
         board.blob_income(board.income)
         board.turn_counter += 1
     board.income = 0
     for turn in range(turn3):
         blob_location_list, blob_number_list, target_list = generate_decision(board)
         board.process_movement(blob_location_list, blob_number_list, target_list)
-        output.generateImage(board.print_output())
+        output.generateImage(board.print_output(), surface, window_size)
         board.blob_income(board.income)
         board.turn_counter += 1
         if (bool(blob_location_list)):
             break
+    while True:
+        for event in pg.event.get():
+            if event == pg.QUIT:
+                break
+    pg.quit()
+    pg.quit()
 
 def test():
     """
