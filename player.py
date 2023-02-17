@@ -3,12 +3,6 @@ import neural_network as nn
 
 # Get all inputs for the player before implement ANN
 
-class Direction(enum.Enum):
-    North = 1
-    East = 2
-    South = 3
-    West = 4
-
 class Player:
     def __init__(self, id, colour=(0,0,0), x=-1, y=-1, length = 0, width = 0):
         self.id = id
@@ -34,7 +28,7 @@ class Player:
     def get_colour(self) -> tuple[int]:
         return self.colour
     
-    def move_blob(self, direction: Direction, number=0, x=0, y=0):
+    def move_blob(self, direction: int(), number=0, x=0, y=0):
         """
         The player input for a blob army in that area. Used for process_movement
         Argument: direction: which direction to go
@@ -44,11 +38,11 @@ class Player:
                   return: the input set for process movement
         """
         target = tuple()
-        if direction == Direction.North:
+        if direction == 1:
             target = (x, y-1)
-        elif direction == Direction.East:
+        elif direction == 2:
             target = (x+1, y)
-        elif direction == Direction.South:
+        elif direction == 3:
             target = (x, y+1)
         else:
             target = (x-1,y)
