@@ -35,9 +35,9 @@ def dcp_convert(small_output_set: list(), board: gd.Board, blob_loc_list: list()
             loc = board.get_space_at(blob_loc_list[i][j])
             blob = loc.get_number()
             for k in range(1,5):
-                size = math.round(blob * small_output_set[i][j][k])
+                size = round(blob * small_output_set[i][j][k])
                 if (size != 0):
-                    loc, num, target = player.move_blob(player.Direction(i).name, size, blob_loc_list[i][j][0], blob_loc_list[i][j][1])
+                    loc, num, target = player_list[i].move_blob(player.Direction(k).name, size, blob_loc_list[i][j][0], blob_loc_list[i][j][1])
                     blob_location_list.append(loc)
                     blob_number_list.append(num)
                     target_list.append(target)
@@ -54,7 +54,7 @@ def dcp_ann(blob: list(), bignet: list(), smallnet: list(), input_set: list(), l
     # Unserialize the arguements
     blob_coord = blob
     np_bignet = np.array(bignet)
-    np_smallnet = np.array(smallnet)
+    np_smallnet = np.array(smallnet, dtype=object)
     np_input = np.array(input_set)
     bigoutput_set = np_input
     for i in range(0,len(np_bignet)):
@@ -67,11 +67,10 @@ def dcp_ann(blob: list(), bignet: list(), smallnet: list(), input_set: list(), l
         np_input2 = (np_input2 - np_input2.min()) / (np_input2.max() - np_input2.min())
         np_input2 = np.append(np_input2, [player_blob[0] / length])
         np_input2 = np.append(np_input2, [player_blob[1] / length])
-        smalloutput_set = np.copy(bigoutput_set)
+        smalloutput_set = np.copy(np_input2)
         for i in range(0,len(np_smallnet)):
-            bigoutput_set = np.matmul(np_smallnet[i], bigoutput_set)
+            smalloutput_set = np.matmul(np_smallnet[i], smalloutput_set)
         smalloutput_set = smalloutput_set / np.sum(smalloutput_set)
-        output_list.append(smalloutput_set)
-        player_output.append(output_list)
+        player_output.append(smalloutput_set)
     # dcp.progress(100)
     return player_output
