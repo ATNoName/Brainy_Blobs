@@ -1,7 +1,25 @@
 import game_data as gd
 import output
+import distributive as dis
 
 # This is for running the function
+
+def generate_decision(self):
+    """
+    Force all players to generate input for the board.
+    Output should be three list which process_movement can be executed
+    """
+    blob_list = []
+    bignet_list = []
+    smallnet_list = []
+    input_list = []
+    for player in self.player_list:
+        blob_list.append(self.blob_search(player))
+        bignet_list.append(player.bignet.hidden.tolist())
+        smallnet_list.append(player.smallnet.hidden.tolist())
+        input_list.append(self.generate_input_set(player).tolist())
+    return dis.dcp_activate(blob_list, bignet_list, smallnet_list, input_list, self)
+
 def main():
     population = 10
     length = 40

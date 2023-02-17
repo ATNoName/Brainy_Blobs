@@ -1,8 +1,5 @@
-import random
 import enum
-import numpy as np
 import neural_network as nn
-import game_data
 
 # Get all inputs for the player before implement ANN
 

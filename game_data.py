@@ -1,10 +1,8 @@
 from __future__ import annotations
 import random
 import genetic as gene
-import neural_network as nn
 import player as p
 import copy
-import distributive as dis
 import numpy as np
 
 
@@ -254,22 +252,6 @@ class Board:
             x, y = player.get_base()
             self.board_state[x][y].add_number(income)
 
-    def generate_decision(self):
-        """
-        Force all players to generate input for the board.
-        Output should be three list which process_movement can be executed
-        """
-        blob_list = []
-        bignet_list = []
-        smallnet_list = []
-        input_list = []
-        for player in self.player_list:
-            blob_list.append(self.blob_search(player))
-            bignet_list.append(player.bignet.hidden.tolist())
-            smallnet_list.append(player.smallnet.hidden.tolist())
-            input_list.append(self.generate_input_set(player).tolist())
-        return dis.dcp_activate(self)
-
     def print_output(self):
         """
         Convert board state into data which can be processed and displayed
@@ -313,7 +295,7 @@ class Board:
         input_set = input_set / np.linalg.norm(input_set)
         input_set = (input_set / 2) + 0.5
         return input_set
-
+    
 
 class Space:
     def __init__(self):

@@ -1,21 +1,24 @@
-from bifrost import dcp
 import math
-import neural_network as nn
+import numpy as np
 import player
 import game_data as gd
+# from bifrost import dcp
 # implement dcp here
 
 def dcp_activate(blob_list: list(), bignet_list: list(), smallnet_list: list(), input_list: list(), board: gd.Board):
     """
     Initalize DCP
     """
-    job = dcp.compute_for((blob_list, bignet_list, smallnet_list, input_list, board.length, board.width), dcp_ann)
-    job.requires('numpy', 'math')
-    job.compute_groups = [{'joinKey': 'test', 'joinSecret': 'dcp'}]
-    job.public['name'] = "ANN evalutation via DCP!"
+    result = []
+    for i in range(len(blob_list)):
+        result.append(dcp_ann(blob_list[i], bignet_list[i], smallnet_list[i], input_list[i], board.length, board.width))
+    # job = dcp.compute_for((blob_list, bignet_list, smallnet_list, input_list, board.length, board.width), dcp_ann)
+    # job.requires('numpy', 'math')
+    # job.compute_groups = [{'joinKey': 'test', 'joinSecret': 'dcp'}]
+    # job.public['name'] = "ANN evalutation via DCP!"
     # Should give us results in a 2d array of tuples where 1st dimension represent each player decision,
     # 2nd dimension represent the set of input for that player
-    result = job.exec(0.001)
+    # result = job.exec(0.001)
     return dcp_convert(result, board, blob_list)
 
 def dcp_convert(small_output_set: list(), board: gd.Board, blob_loc_list: list()):
@@ -45,9 +48,9 @@ def dcp_ann(blob: list(), bignet: list(), smallnet: list(), input_set: list(), l
     """
     Calculate player decision using other cores
     """
-    import numpy as np
-    import math
-    dcp.progress(0)
+    # import numpy as np
+    # import math
+    # dcp.progress(0)
     # Unserialize the arguements
     blob_coord = blob
     np_bignet = np.array(bignet)
@@ -60,7 +63,7 @@ def dcp_ann(blob: list(), bignet: list(), smallnet: list(), input_set: list(), l
     for player_blob in blob_coord:
         output_list = list()
         for coord in player_blob:
-            dcp.progress(coord / len(player.blob_list()))
+            # dcp.progress(coord / len(player.blob_list()))
             np_input2 = np.copy(bigoutput_set)
             np_input2.append(coord[0] / length)
             np_input2.append(coord[1] / width)
@@ -70,5 +73,5 @@ def dcp_ann(blob: list(), bignet: list(), smallnet: list(), input_set: list(), l
             smalloutput_set = smalloutput_set / np.sum(smalloutput_set)
             output_list.append(smalloutput_set)
         player_output.append(output_list)
-    dcp.progress(100)
+    # dcp.progress(100)
     return player_output

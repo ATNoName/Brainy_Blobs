@@ -50,7 +50,7 @@ def mutate(net: nn.NeuralNetwork, mutation = 0):
                 net.hidden[l][y][x] = random.random()
                 mutated_weight.append((l,x,y))
 
-def fitness(atkplayer: player.Player, player_list: list()):
+def fitness(atkplayer: player.Player, player_list: list[player.Player]):
     # return a neural network
     randplayer = random.choice(player_list)
     atkbignet = atkplayer.bignet
