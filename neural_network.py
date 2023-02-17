@@ -34,9 +34,9 @@ class NeuralNetwork:
         """
         Randomize every weight of the neural network
         """
-        for layer in self.hidden:
-            for x in self.hidden[layer]:
-                for y in self.hidden[layer][x]:
+        for layer in range(len(self.hidden)):
+            for x in range(len(self.hidden[layer])):
+                for y in range(len(self.hidden[layer][x])):
                     self.set_weight(layer, x, y, random.random())
 
 

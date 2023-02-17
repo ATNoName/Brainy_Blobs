@@ -225,17 +225,17 @@ class Board:
         Arguments: value: how many players and base will be added
                    dist: the minimum distance that base has to be from other to be valid
         """
-        for self in range(value):
+        for base in range(value):
             is_suitable = False
             while (not is_suitable):
                 is_suitable = True
-                x = random.randint(0, self.length - 1)
-                y = random.randint(0, self.width - 1)
+                x = random.randint(0, self.width - 1)
+                y = random.randint(0, self.length - 1)
                 for player in self.player_list:
                     baseX, baseY = player.get_base()
                     if abs(baseX - x) + abs(baseY - y) < dist:
                         is_suitable = False
-            new_player = p.Player(len(self.player_list), (random.randint(0, 255), random.randint(0, 255), random.randint(0, 255)), x, y)
+            new_player = p.Player(len(self.player_list), (random.randint(0, 255), random.randint(0, 255), random.randint(0, 255)), x, y, self.length, self.width)
             self.board_state[x][y].set_type(1)
             self.board_state[x][y].set_number(10)
             self.board_state[x][y].set_owner(new_player)
@@ -292,8 +292,8 @@ class Board:
                         input_set[x*self.length+y] = space.get_number()
                 else:
                     base_location.append((x,y))
-        input_set = input_set / np.linalg.norm(input_set)
-        input_set = (input_set / 2) + 0.5
+        if input_set.max() - input_set.min() != 0:
+            input_set = (input_set - input_set.min()) / (input_set.max() - input_set.min())
         return input_set
     
 

@@ -1,7 +1,5 @@
-import numpy as np
 import random
 import neural_network as nn
-import game_data as gd
 import player
 
 def crossover(net1: nn.NeuralNetwork, net2: nn.NeuralNetwork, rate = 0.0):

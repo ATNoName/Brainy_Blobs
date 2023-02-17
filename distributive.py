@@ -58,7 +58,7 @@ def dcp_ann(blob: list(), bignet: list(), smallnet: list(), input_set: list(), l
     np_input = np.array(input_set)
     bigoutput_set = np_input
     for i in range(0,len(np_bignet)):
-        bigoutput_set = np.matmul(np_bignet[i], bigoutput_set)
+        bigoutput_set = np.matmul(bigoutput_set, np_bignet[i])
     player_output = list()
     for player_blob in blob_coord:
         output_list = list()
