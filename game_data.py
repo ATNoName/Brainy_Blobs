@@ -79,7 +79,7 @@ class Board:
                 target_space.add_number(movement.blob_number)
             else:
                 if movement.blob_number > target_space.get_number():
-                    self.conquer_space(self, movement.owner, target_space)
+                    self.conquer_space(movement.owner, target_space)
                 target_space.set_number(abs(movement.blob_number - target_space.get_number()))
         
         # Process encirclement
@@ -130,11 +130,11 @@ class Board:
         # Process area collisions between movements with different owners
         for i in range(len(collision_targets)):
             collision_movements[i].sort(key=lambda movement: movement.blob_number)
-            n = len(collision_movements)
-            result_blob_number = collision_movements[i].blob_number[n - 1] - collision_movements[i].blob_number[n - 2]
+            n = len(collision_movements[i])
+            result_blob_number = collision_movements[i][n - 1].blob_number - collision_movements[i][n - 2].blob_number
             if result_blob_number > 0:
                 n -= 1
-                collision_movements[i].blob_number[n - 1] = result_blob_number
+                collision_movements[i][n - 1].blob_number = result_blob_number
             for j in range(n):
                 collision_movements[i][j].blob_number = 0
         # delete processed movements (movements with blob_number of 0) from unprocessed_movements
@@ -167,11 +167,11 @@ class Board:
         Argument: player: the player marked for deletion
         """
         for space_column in self.board_state:
-            for space in self.board_state[space_column]:
+            for space in space_column:
                 if space.get_owner() == player:
                     space.set_owner(None)
                     space.set_number(0)
-        self.player_list.pop(player)
+        self.player_list.remove(player)
     
     def position_encircled(self, position: list[int]) -> None | p.Player:
         """
@@ -257,7 +257,7 @@ class Board:
         Convert board state into data which can be processed and displayed
         by the output.py
         """
-        return copy.deepcopy(self.board_state)
+        return copy.deepcopy(self)
     
     def blob_search(self, player: p.Player):
         """
