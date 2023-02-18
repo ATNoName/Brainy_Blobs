@@ -25,5 +25,5 @@ Each player is given neural networks which will make the decisions for them and 
 DCP is used to do all of the ANN calculation which consists for multiple matrix multiplication per player. On a single core, this would take years, but on DCP, this is reduce the time to minutes or even seconds.
 
 TODO: \
-Debug every function \
-Implement output
+Debug and fix bifrost \
+Debug and fix the game
