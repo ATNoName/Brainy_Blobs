@@ -38,6 +38,15 @@ def dcp_convert(small_output_set: list(), board: gd.Board, blob_loc_list: list()
                 size = round(blob * small_output_set[i][j][k])
                 if (size != 0):
                     loc, num, target = player_list[i].move_blob(k, size, blob_loc_list[i][j][0], blob_loc_list[i][j][1])
+                    target = list(target)
+                    if target[1] < 0:
+                        target[1] = 1
+                    if target[1] > board.length - 1:
+                        target[1] = board.length - 2
+                    if target[0] < 0:
+                        target[0] = 1
+                    if target[0] > board.width - 1:
+                        target[0] = board.width - 2
                     blob_location_list.append(loc)
                     blob_number_list.append(num)
                     target_list.append(target)
