@@ -16,7 +16,7 @@ def crossover(net1: nn.NeuralNetwork, net2: nn.NeuralNetwork, rate = 0.0):
     if len(net1.hidden) > 1:
         hidden_length = len(net1.hidden[0])
     if isValid:
-        new_net = nn.NeuralNetwork(len(net1.input), hidden_length, len(net1.hidden), len(net1.output))
+        new_net = nn.NeuralNetwork(net1.input_length, hidden_length, net1.hidden_length, net1.output_length)
         for l in range(len(net2.hidden)):
             cross = (1 - rate) * net2.hidden[l].size()
             cross_list = list()
