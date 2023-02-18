@@ -250,7 +250,7 @@ class Board:
         """
         for player in self.player_list:
             x, y = player.get_base()
-            self.board_state[x][y].add_number(income)
+            self.board_state[x][y].add_number(income * random.randint(0,5))
 
     def print_output(self):
         """

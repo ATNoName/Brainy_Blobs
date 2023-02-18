@@ -1,5 +1,5 @@
 import game_data as gd
-#import output
+import output
 import distributive as dis
 import player as p
 import pygame as pg
@@ -24,9 +24,9 @@ def generate_decision(board = gd.Board):
     return dis.dcp_activate(blob_list, bignet_list, smallnet_list, input_list, board)
 
 def main():
-    population = 2
-    length = 10
-    width = 5
+    population = 15
+    length = 15
+    width = 15
     frame_rate = 15 # how many image per second
     turn1 = frame_rate * 60 # how many turns for learning phase
     turn2 = frame_rate * 60 # how many turns for fighting phase
@@ -34,7 +34,7 @@ def main():
     board = gd.Board(length, width)
     board.generate_base(population, 2)
     pg.init()
-    window_size = (1920, 1080)
+    window_size = (1280, 720)
     surface = pg.display.set_mode(window_size)
     output.generateImage(board.print_output(), surface, window_size)
     for turn in range(turn1):
