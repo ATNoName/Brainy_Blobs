@@ -22,7 +22,9 @@ End phase is when income is removed. If all blobs are expended or the time for e
 
 Each player is given neural networks which will make the decisions for them and additionally, the simulation will have a custom genetic algorithm designed to reward player elimination and in the long run survivability. \
 
-DCP is used to do all of the ANN calculation which consists for multiple matrix multiplication per player. On a single core, this would take years, but on DCP, this is reduce the time to minutes or even seconds.
+The neural network consist of 2 phases: the thinking phase (in the code it is named bignet) which should take the board information and should in theory output which areas of the board is most important to attack (in reality this could be something different since the only representation the neural network is given is the state of the board as the input neurons).The moving phase (named smallnet) which is used to decide how many blobs to move, to move or not move and which direction. \
+
+DCP is used to do all of the Neural Network calculation which consists for multiple matrix-vector multiplication per player. The size of the matrix depends on the size of the board and how many hidden layer (default is 3) in the network.\
 
 TODO: \
 Debug and fix bifrost \
