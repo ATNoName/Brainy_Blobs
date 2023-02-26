@@ -37,3 +37,4 @@ DCP is used to do all of the Neural Network calculation which consists for multi
  - ```pip install numpy```
  - ```pip install pygame```
  - Run ```main.py```
+Remember that the framerate depends on the size of your compute group.
