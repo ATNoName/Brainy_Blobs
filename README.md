@@ -1,6 +1,9 @@
 # Brainy_Blobs
 Using Evolutionary Neural Network and Distributive Programming in order to simulate a strategy game.
 
+![Screenshot of the simulation](https://github.com/ATNoName/Brainy_Blobs/blob/main/Screenshot_1.png?raw=true)
+
+
 Rules of the strategy game:
 - The game is played on board with *a* by *b* spaces. 
 - The game starts with 2 ≤ *n* ≤ ab players. 
