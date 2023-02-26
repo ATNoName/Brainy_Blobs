@@ -1,14 +1,18 @@
 # Brainy_Blobs
-Using Evolutionary Neutral Network and Distributive Programming in order to simulate a prototypical strategy game.
+Using Evolutionary Neural Network and Distributive Programming in order to simulate a strategy game.
 
-Rules of the strategy games: \
-You start with a base and 10 blobs in a randomly generated position of the board. These blobs represents attack bot really. Within the board there are many rules and objective to follow:
-1) You may move a blob in any direction for the turn. This means you may stay for multiple turns, move a group of blob in one direction or split the group up and move in multiple directions.
-2) Two group of blob owned by you will merge in a space
-3) Every time a blob or a group of blobs enter a space not owned by you or in the visual output "coloured by you", the blob expends itself to conquer the space or "colour it"
-4) Whenever a blob or a group of blob meet an opposing blob either by moving towards each other or meeting at a space, each blob expends itself to take out an opposing. In the case of 3 opposing blob moving to a space, then each blob expend itself to take out each other, same with 4 or 5. What this effectively means the highest blob group in the collision wins.
-5) When blobs (that are the same owner) "surround" (read as occupy neighbouring space) another group of blobs, that group of blob is wiped out and conquered by the surrounding blobs.
-6) At the end of the turn, each base gets an income of blobs depending on the phase of the game
+Rules of the strategy game: \
+- The game is played on board with *a* by *b* spaces. 
+- The game starts with 2 ≤ *n* ≤ ab players. 
+- Each space has an owner that is either a player, or none. Each space can contain an amount of blobs. 
+- There are 2 types of spaces, a base space or a normal space. 
+- There is 1 base space at a random position on the board for each player in the game. 
+- Every turn, each player's base space is given an income of blobs, and each player can move an amount of their blobs on a space to the direction up, down, left, or right.
+- If the space moved into is owned by the player, the blobs are added to that space.
+- Every time a blob or a group of blobs is moved by a player a space not owned by the player or in the visual output "coloured by the player", the blob expends itself to conquer the space or "colour it", and change the owner to the player.
+- If a base space is conquered by a player, it is changed back to a normal space. 
+- Whenever a blob or a group of blob meet an opposing blob either by moving towards each other or meeting at a space, each blob expends itself to take out an opposing. In the case of 3 opposing blob moving to a space, then each blob expend itself to take out each other, same with 4 or 5. What this effectively means the highest blob group in the collision wins.
+- When blobs (that are the same owner) "surround" (read as occupy neighbouring space) another group of blobs, that group of blob is wiped out and conquered by the surrounding blobs.
 
 The goal of the game is to conquer enemy base by moving a group of blobs into that space. This will eliminate the player and remove everything owner by the deleted player.\
 
