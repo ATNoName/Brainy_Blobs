@@ -26,6 +26,10 @@ The neural network consist of 2 phases: the thinking phase (in the code it is na
 
 DCP is used to do all of the Neural Network calculation which consists for multiple matrix-vector multiplication per player. The size of the matrix depends on the size of the board and how many hidden layer (default is 3) in the network.\
 
-TODO: \
-Debug and fix bifrost \
-Debug and fix the game
+## Running
+ - Install node.js 16
+ - ```pip install git+https://github.com/Distributive-Network/Bifrost```
+ - Move .dcp directory to your home directory
+ - ```pip install numpy```
+ - ```pip install pygame```
+ - Run ```main.py```
